@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "task",
-        "USER": "postgres",
-        "PASSWORD": "apisit250",
-        "HOST": "127.0.0.1",
+        "NAME": "verceldb",
+        "USER": "default",
+        "PASSWORD": "t5FeBDwAGf9H",
+        "HOST": "ep-fancy-moon-17780660-pooler.ap-southeast-1.postgres.vercel-storage.com",
         "PORT": "5432",
     }
 }
