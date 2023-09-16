@@ -9,6 +9,9 @@ urlpatterns = [
     
     # authentication
     path('register', api.user_register, name='register-api'),
+    path('login', api.user_login, name='login-api'),
+    
+    
     
     
 ]
