@@ -6,33 +6,25 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-
 # Create your models here.
 
-class Tags(models.Model):
-    tags = models.CharField(max_length=64)
-    
-    def __str__(self) -> str:
-        return self.tags
 
+STATUS = (
+        (1, "new"),
+        (2, "in progress"),
+        (3, "completed"),
+    )
 
 class Project(models.Model):
-    
-    STATUS = (
-        (1, "developing"),
-        (2, "finished"),
-        (3, "letter"),
-        (4, "for got")
-    )
     
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     desc = models.TextField(default="-")
     status = models.IntegerField(choices=STATUS, default=1)
+    budget = models.DecimalField(max_digits=9, decimal_places=2)
     
-    create_date = models.DateTimeField(auto_now_add=True)
-    lasts_edit = models.DateTimeField(auto_created=True, auto_now_add=True)  
-    finish_date = models.DateTimeField()
+    start_data = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField() 
     
     repo = models.URLField()
     
@@ -41,6 +33,7 @@ class Project(models.Model):
   
 class TaskManagement(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return self.project.name
@@ -51,6 +44,9 @@ class Task(models.Model):
     task_name = models.CharField(max_length=128)
     task_desc = models.TextField()
     task_status = models.BooleanField(default=False)
+    
+    start_data = models.DateTimeField(auto_now_add=True,  null=True)
+    end_date = models.DateTimeField(default=None, null=True)
     
     def __str__(self) ->str:
         return self.task_management.project.name

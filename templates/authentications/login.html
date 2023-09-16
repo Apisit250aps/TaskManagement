@@ -1,4 +1,4 @@
-{% extends "pages/authentications/base.html" %}
+{% extends "authentications/base.html" %}
 
 {% block content %}
 <div class="container-xxl">
@@ -64,8 +64,8 @@
                     <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
                     <!-- alert -->
-                    <div v-show="on_alert" :class="{'alert-danger':!regis, 'alert-success':regis}"
-                        class="alert  alert-dismissible" role="alert">
+                    <div v-show="on_alert" 
+                        class="alert alert-danger alert-dismissible" role="alert">
                         [{alert_message}]
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>

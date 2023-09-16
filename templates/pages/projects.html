@@ -1,0 +1,34 @@
+{% extends "pages/base.html" %}
+<!-- block content -->
+{% block content %}
+<div class=" sticky-top float-end top-0"></div>
+<button type="button" class="btn btn-danger">
+asd
+</button>
+<!-- content here -->
+[{message}]
+
+{% endblock content %}
+<!-- end block content -->
+{% block script %}
+<script>
+    const { createApp, ref, computed } = Vue;
+
+    const App = createApp(
+        {
+            delimiters:["[{","}]"],
+            data(){
+                return {
+                    page:"projects",
+                    type:"all",
+                    message:"hello world"
+                }
+            }
+
+        }
+    );
+
+    App.mount('#app')
+</script>
+
+{% endblock script %}
