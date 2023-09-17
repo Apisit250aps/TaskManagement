@@ -1,12 +1,89 @@
 {% extends "pages/base.html" %}
 <!-- block content -->
 {% block content %}
-<div class=" sticky-top float-end top-0"></div>
-<button type="button" class="btn btn-danger">
-asd
-</button>
+<div class="buy-now">
+    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalCenter"
+        class="btn btn-danger btn-buy-now">New Project</a>
+</div>
 <!-- content here -->
-[{message}]
+<section>
+    <div v-show="project_list.length == 0" class="text-center text-danger">
+        -- Create New Project --
+    </div>
+    <div v-for="project in project_list" class="card mb-4">
+        <h5 class="card-header">[{project.name}]</h5>
+        <div class="card-body">
+            <div class="text-light small fw-semibold">[{project.status}]</div>
+            <div class="demo-inline-spacing">
+                <span class="badge bg-label-primary">Primary</span>
+                <span class="badge bg-label-secondary">Secondary</span>
+                <span class="badge bg-label-success">Success</span>
+                <span class="badge bg-label-danger">Danger</span>
+                <span class="badge bg-label-warning">Warning</span>
+                <span class="badge bg-label-info">Info</span>
+                <span class="badge bg-label-dark">Dark</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Create New Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-fullname">Project Name</label>
+                    <input type="text" class="form-control" v-model="project_name" required id="basic-default-fullname"
+                        placeholder="Project name" @blur="project_name_exist()" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-message">descriptions</label>
+                    <textarea id="basic-default-message" v-model="project_desc" class="form-control"
+                        placeholder="Description"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="defaultSelect" class="form-label">status</label>
+                    <select id="defaultSelect" v-model="project_stat" class="form-select">
+                        <option value="1" selected>New</option>
+                        <option value="2">In progress</option>
+                        <option value="3">Completed</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-company">Budget</label>
+                    <input type="number" class="form-control" id="basic-default-company" placeholder=""
+                        v-model="projectBudget" />
+                </div>
+                <div class="mb-3">
+                    <label for="html5-datetime-local-input" class="col-md-2 col-form-label">Start date</label>
+                    <input class="form-control" type="datetime-local" id="html5-datetime-local-input"
+                        v-model="project_Start" />
+
+                </div>
+                <div class="mb-3">
+                    <label for="html5-datetime-local-input" class="col-md-2 col-form-label">end date</label>
+                    <input class="form-control" type="datetime-local" id="html5-datetime-local-input"
+                        v-model="project_Ended" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-phone">Repository URL</label>
+                    <input type="url" id="basic-default-phone" class="form-control phone-mask" placeholder=""
+                        v-model="project_repos" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" ref="close-modal" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="submit" @click="onSubmit($event)" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% endblock content %}
 <!-- end block content -->
@@ -16,12 +93,99 @@ asd
 
     const App = createApp(
         {
-            delimiters:["[{","}]"],
-            data(){
+            delimiters: ["[{", "}]"],
+            data() {
                 return {
-                    page:"projects",
-                    type:"all",
-                    message:"hello world"
+                    page: "projects",
+                    type: "all",
+                    message: "hello world",
+
+                    project_name: "",
+                    project_desc: "",
+                    project_stat: "",
+                    projectBudget: 0,
+                    project_Start: "",
+                    project_Ended: "",
+                    project_repos: "",
+
+                    project_name_isValid: true,
+
+                    form_isvalid: true,
+
+                    project_list:new Array
+
+                };
+            },
+            mounted() {
+                console.log("loaded!");
+
+                axios(
+                    {
+                        method:'get',
+                        url:"{% url 'get-project-user-api' %}"
+                    }
+                ).then((response) => {
+                    this.project_list = response.data['data']
+                    
+                }).catch((err) => {
+                    
+                });
+            },
+            methods: {
+                project_name_exist() {
+
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                    form_data.append('project_name', this.project_name);
+                    axios(
+                        {
+                            method: 'post',
+                            data: form_data,
+                            url: "{% url 'check-project-name' %}"
+                        }
+                    ).then((response) => {
+                        this.project_name_isValid = response.data['status'];
+                    }).catch((err) => {
+
+                    });
+                },
+                onSubmit(e) {
+                    e.preventDefault();
+
+                    this.form_isvalid = true
+
+                    this.project_name_isValid = true;
+                    if (this.project_name == "") {
+                        this.project_name_isValid = false;
+                        this.form_isvalid = false;
+                    }
+
+                    if (this.form_isvalid) {
+                        const form_data = new FormData;
+                        form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                        form_data.append('project_name', this.project_name);
+                        form_data.append('project_desc', this.project_desc);
+                        form_data.append('project_stat', this.project_stat);
+                        form_data.append('projectBudget', this.projectBudget);
+                        form_data.append('project_Start', this.project_Start);
+                        form_data.append('project_Ended', this.project_Ended);
+                        form_data.append('project_repos', this.project_repos);
+
+                        axios(
+                            {
+                                method: 'post',
+                                data: form_data,
+                                url: "{% url 'create-project-api' %}",
+                            }
+                        ).then((response) => {
+                            if (response.data['status']){
+                                location.reload()
+                            }
+
+                        }).catch((err) => {
+
+                        });
+                    }
                 }
             }
 

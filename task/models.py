@@ -23,14 +23,14 @@ class Project(models.Model):
     status = models.IntegerField(choices=STATUS, default=1)
     budget = models.DecimalField(max_digits=9, decimal_places=2)
     
-    start_data = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField()
     end_date = models.DateTimeField() 
     
     repo = models.URLField()
     
     def __str__(self) -> str:
         return self.name
-  
+
 class TaskManagement(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -45,7 +45,7 @@ class Task(models.Model):
     task_desc = models.TextField()
     task_status = models.BooleanField(default=False)
     
-    start_data = models.DateTimeField(auto_now_add=True,  null=True)
+    start_date = models.DateTimeField(  null=True)
     end_date = models.DateTimeField(default=None, null=True)
     
     def __str__(self) ->str:
